@@ -1,4 +1,5 @@
 import torch.optim as optim
+import inspect
 
 class HessianFreeOptimizer(optim.Optimizer):
     def __init__(self, 
@@ -15,7 +16,7 @@ class HessianFreeOptimizer(optim.Optimizer):
         if weight_decay < 0.0:
             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
         defaults = dict(lr=lr, damping=damping, maxIter=maxIter,
-                        tol=tol, atol=atol, savefiled=bp_extension.savefield)
+                        tol=tol, atol=atol, savefield=bp_extension.savefield)
 
         super(HessianFreeOptimizer, self).__init__(parameters, defaults)
         self.known_modules = {'Linear', 'Conv2d'}
@@ -24,14 +25,18 @@ class HessianFreeOptimizer(optim.Optimizer):
 
 
     def step(self):
-        print("INSIDE STEP:::::::::::::, ", self.param_groups)
+        print("INSIDE STEP:::::::::::::, ", len(self.param_groups))
+        i = 0
         for group in self.param_groups:
             for p in group["params"]:
-                print("INSIDE FOR LOOP::::::::")
+                print("P: \n", p.__dict__)
+                print("vars(p) \n", vars(p))
+                print("i is ", i)
+                print("INSIDE FOR LOOP::::::::", type(group["params"]), type(p), p.size())
+                exit()
                 damped_curvature = self.damped_matvec(
                     p, group["damping"], group["savefield"]
                 )
-
                 direction, info = self.cg(
                     damped_curvature,
                     -p.grad.data,
@@ -39,18 +44,15 @@ class HessianFreeOptimizer(optim.Optimizer):
                     tol=group["tol"],
                     atol=group["atol"],
                 )
-
                 p.data.add_(direction, alpha=group["lr"])
+                i += 1
 
     def damped_matvec(self, param, damping, savefield):
-        print("INSIDE MATVEC::::::::::::::::::::")
         curvprod_fn = getattr(param, savefield)
-
         def matvec(v):
             v = v.unsqueeze(0)
             result = damping * v + curvprod_fn(v)
             return result.squeeze(0)
-
         return matvec        
 
     @staticmethod

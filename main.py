@@ -104,11 +104,10 @@ net = get_network(args.network,
                   dropRate=args.dropRate,
                   base_width=args.base_width,
                   cardinality=args.cardinality)
-print(net)
+#print(net)
 optim_name = args.optimizer.lower()
  
 net = net.to(args.device)
-#print(net)
 
 module_names = ''
 if hasattr(net, 'features'): 
@@ -221,9 +220,6 @@ def train(epoch):
     total = 0
     step_st_time = time.time()
     epoch_time = 0
-    print('\nKFAC/KBFGS damping: %f' % damping)
-    print('\nNGD damping: %f' % (damping))
-
     # 
     desc = ('[%s][LR=%s] Loss: %.3f | Acc: %.3f%% (%d/%d)' %
             (tag, lr_scheduler.get_last_lr()[0], 0, 0, correct, total))
