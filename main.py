@@ -108,7 +108,7 @@ net = get_network(args.network,
 optim_name = args.optimizer.lower()
  
 net = net.to(args.device)
-
+net = extend(net)
 module_names = ''
 if hasattr(net, 'features'): 
     module_names = 'features'

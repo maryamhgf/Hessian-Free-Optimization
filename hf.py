@@ -33,7 +33,6 @@ class HessianFreeOptimizer(optim.Optimizer):
                 print("vars(p) \n", vars(p))
                 print("i is ", i)
                 print("INSIDE FOR LOOP::::::::", type(group["params"]), type(p), p.size())
-                exit()
                 damped_curvature = self.damped_matvec(
                     p, group["damping"], group["savefield"]
                 )
