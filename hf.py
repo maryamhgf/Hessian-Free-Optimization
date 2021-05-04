@@ -39,7 +39,7 @@ class HessianFreeOptimizer(optim.Optimizer):
                 direction, info = self.cg(
                     damped_curvature,
                     -p.grad.data,
-                    maxiter=group["maxiter"],
+                    maxiter=group["maxIter"],
                     tol=group["tol"],
                     atol=group["atol"],
                 )

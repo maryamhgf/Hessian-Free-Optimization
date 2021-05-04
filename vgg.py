@@ -50,7 +50,7 @@ class VGG(nn.Module):
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
             
-    def getSequentialVersion(self):
+    def get_sequential_version(self):
         return make_layers(cfg[self.cfg_type], batch_norm=self.batch_norm, flag=True)
 
 
@@ -69,7 +69,7 @@ def make_layers(cfg, batch_norm=False, flag=False):
             in_channels = v
     if flag:
         #for Cifar10
-        layers += [nn.Linear(512, 10)]
+        layers += [nn.Flatten(), nn.Linear(512, 10)]
     return nn.Sequential(*layers)
 
 

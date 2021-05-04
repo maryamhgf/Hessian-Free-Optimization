@@ -2,6 +2,7 @@
 import sys
 from hf import HessianFreeOptimizer
 from vgg import VGG
+import vgg
 import argparse
 import os
 import torch
@@ -95,6 +96,7 @@ nc = {
     'fashion-mnist': 10
 }
 num_classes = nc[args.dataset]
+'''
 net = get_network(args.network,
                   depth=args.depth,
                   num_classes=num_classes,
@@ -104,11 +106,21 @@ net = get_network(args.network,
                   dropRate=args.dropRate,
                   base_width=args.base_width,
                   cardinality=args.cardinality)
-#print(net)
+'''
+net = vgg.vgg16(depth=args.depth,
+                  num_classes=num_classes,
+                  growthRate=args.growthRate,
+                  compressionRate=args.compressionRate,
+                  widen_factor=args.widen_factor,
+                  dropRate=args.dropRate,
+                  base_width=args.base_width,
+                  cardinality=args.cardinality).get_sequential_version()
+print(net)
 optim_name = args.optimizer.lower()
  
 net = net.to(args.device)
 net = extend(net)
+
 module_names = ''
 if hasattr(net, 'features'): 
     module_names = 'features'
@@ -238,7 +250,7 @@ def train(epoch):
             outputs = net(inputs)
             loss = criterion(outputs, targets)
             print("FLAG1")
-            with backpack(optimizer.bp_extension):
+            with backpack(extensions.GGNMP()):
                 loss.backward()    
             optimizer.step()      
             ####################################################Cont.
