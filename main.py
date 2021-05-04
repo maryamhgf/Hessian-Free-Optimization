@@ -252,9 +252,10 @@ def train(epoch):
             print("FLAG1")
             with backpack(extensions.GGNMP()):
                 loss.backward()    
-            optimizer.step()      
+            optimizer.step()    
+            '''  
             ####################################################Cont.
-        ### new optimizer test
+            ### new optimizer test
             ##### do kl clip
             lr = lr_scheduler.get_last_lr()[0]
             vg_sum = 0
@@ -281,7 +282,7 @@ def train(epoch):
 
                     lr = lr_scheduler.get_last_lr()[0]
                     param.data.add_(-lr, d_p)
-
+            '''
             
         if optimizer in ['hf']:
             train_loss += loss.detach().item()
@@ -307,7 +308,9 @@ def train(epoch):
                 TRAIN_INFO['memory'].append(torch.cuda.memory_reserved())
             step_st_time = time.time()
             net.train()
-
+        
+        if args.maxIter is not None and batch_idx > args.maxIter:
+            break
     writer.add_scalar('train/loss', train_loss/(batch_idx + 1), epoch)
     writer.add_scalar('train/acc', 100. * correct / total, epoch)
     acc = 100. * correct / total
