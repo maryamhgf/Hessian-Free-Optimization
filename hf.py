@@ -1,6 +1,7 @@
 import torch.optim as optim
 import inspect
 import torch
+import math
 
 class HessianFreeOptimizer(optim.Optimizer):
     def __init__(self, 
