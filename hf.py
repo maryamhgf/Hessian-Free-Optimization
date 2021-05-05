@@ -18,7 +18,7 @@ class HessianFreeOptimizer(optim.Optimizer):
         if weight_decay < 0.0:
             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
         defaults = dict(lr=lr, damping=damping, maxIter=maxIter,
-                        tol=tol, atol=atol, savefield=bp_extension.savefield)
+                        tol=tol, atol=atol, savefield=bp_extension.savefield, weight_decay=weight_decay)
 
         super(HessianFreeOptimizer, self).__init__(parameters, defaults)
         self.known_modules = {'Linear', 'Conv2d'}
@@ -27,14 +27,10 @@ class HessianFreeOptimizer(optim.Optimizer):
 
 
     def step(self):
-        print("INSIDE STEP:::::::::::::, ", len(self.param_groups))
         i = 0
         for group in self.param_groups:
+            weight_decay = group['weight_decay']
             for p in group["params"]:
-                print("P: \n", p.__dict__)
-                print("vars(p) \n", vars(p))
-                print("i is ", i)
-                print("INSIDE FOR LOOP::::::::", type(group["params"]), type(p), p.size())
                 damped_curvature = self.damped_matvec(
                     p, group["damping"], group["savefield"]
                 )
@@ -45,7 +41,12 @@ class HessianFreeOptimizer(optim.Optimizer):
                     tol=group["tol"],
                     atol=group["atol"],
                 )
-                p.data.add_(direction, alpha=group["lr"])
+                if weight_decay != 0:
+                    d_p = direction
+                    d_p.add_(p.data, alpha=weight_decay)
+                    p.data.add_(d_p, alpha=group["lr"])
+                else:
+                    p.data.add_(direction, alpha=group["lr"])
                 i += 1
 
     def damped_matvec(self, param, damping, savefield):

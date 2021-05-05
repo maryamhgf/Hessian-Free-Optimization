@@ -31,7 +31,7 @@ import numpy as np
 # fetch args
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--network', default='vgg16_bn', type=str)
+parser.add_argument('--network', default='vgg16', type=str)
 parser.add_argument('--depth', default=19, type=int)
 parser.add_argument('--dataset', default='cifar10', type=str)
 
@@ -402,7 +402,6 @@ def main():
     print("MAIN:::::::::::::::::::::::::::::")
     train_acc, train_loss = get_accuracy(trainloader)
     test_acc, test_loss = get_accuracy(testloader)
-    print("HERE::::::::::::::::::::::::::::::")
     TRAIN_INFO['train_acc'].append(float("{:.4f}".format(train_acc)))
     TRAIN_INFO['test_acc'].append(float("{:.4f}".format(test_acc)))
     TRAIN_INFO['train_loss'].append(float("{:.4f}".format(train_loss)))
@@ -421,7 +420,7 @@ def main():
             TRAIN_INFO['train_loss'].append(float("{:.4f}".format(train_loss)))
             TRAIN_INFO['total_time'].append(float("{:.4f}".format(time.time() - st_time)))
             TRAIN_INFO['epoch_time'].append(float("{:.4f}".format(time.time() - ep_st_time)))
-
+        print("TEST THE MODEL:::::::::::::::::::")
         test_acc, test_loss = test(epoch)
         if args.step_info == "false":
             TRAIN_INFO['test_loss'].append(float("{:.4f}".format(test_loss)))
@@ -437,14 +436,6 @@ def main():
     # print(TRAIN_INFO)
     # save the train info to file:
     fname = "lr_" + str(args.learning_rate) + "_b_" + str(args.batch_size)
-    if optim_name in ['kfac', 'ekfac', 'ngd']:
-        fname = fname + "_d_" + str(args.damping) + "_m_" + str(args.momentum) 
-    elif optim_name == 'adam':
-        fname = fname + "_" + str(args.epsilon) 
-    elif optim_name == 'sgd':
-        fname = fname + "_m_" + str(args.momentum) 
-
-
     fname = fname + str(np.random.rand()) 
     path = "./" + args.dataset + "/" + args.network + "/" + args.optimizer
     if not os.path.exists(path):
