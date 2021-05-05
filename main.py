@@ -96,7 +96,7 @@ nc = {
     'fashion-mnist': 10
 }
 num_classes = nc[args.dataset]
-'''
+
 net = get_network(args.network,
                   depth=args.depth,
                   num_classes=num_classes,
@@ -115,6 +115,7 @@ net = vgg.vgg16(depth=args.depth,
                   dropRate=args.dropRate,
                   base_width=args.base_width,
                   cardinality=args.cardinality).get_sequential_version()
+'''
 print(net)
 optim_name = args.optimizer.lower()
  
@@ -138,6 +139,7 @@ elif args.dataset == 'cifar100':
     summary(net, ( 3, 32, 32))
 elif args.dataset == 'fashion-mnist':
     summary(net, ( 1, 28, 28))
+
 
 # init dataloader
 trainloader, testloader = get_dataloader(dataset=args.dataset,
