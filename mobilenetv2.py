@@ -57,14 +57,17 @@ class MobileNetV2(nn.Module):
         self.bn2 = nn.BatchNorm2d(1280)
         self.linear = nn.Linear(1280, num_classes)
 
-    def _make_layers(self, in_planes):
+    def _make_layers(self, in_planes, flag=False):
         layers = []
         for expansion, out_planes, num_blocks, stride in self.cfg:
             strides = [stride] + [1]*(num_blocks-1)
             for stride in strides:
                 layers.append(Block(in_planes, out_planes, expansion, stride))
                 in_planes = out_planes
-        return nn.Sequential(*layers)
+        if flag:
+            return layers
+        else:
+            return nn.Sequential(*layers)
 
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
@@ -75,6 +78,16 @@ class MobileNetV2(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+
+    def get_sequential_version(self):
+        layers = []
+        layers += [self.conv1, self.bn1]
+        layers += self._make_layers(in_planes=32, flag=True)
+        layers += [self.conv2, slef.b2, self.linear]
+        return nn.Sequential((*layers))
+
+
+
 
 
 # test()
