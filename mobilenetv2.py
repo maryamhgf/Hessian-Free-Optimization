@@ -28,6 +28,10 @@ class Block(nn.Module):
                 nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=1, padding=0, bias=False),
                 nn.BatchNorm2d(out_planes),
             )
+            
+    def get_block_layers(self):
+        layers = []
+        layers += [self.conv1, self.bn1, self. conv2, self. bn2, self.conv3, self. bn3]
 
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
@@ -83,8 +87,8 @@ class MobileNetV2(nn.Module):
         layers = []
         layers += [self.conv1, self.bn1]
         layers += self._make_layers(in_planes=32, flag=True)
-        layers += [self.conv2, slef.b2, self.linear]
-        return nn.Sequential((*layers))
+        layers += [self.conv2, self.bn2, nn.Flatten(), self.linear]
+        return nn.Sequential(*layers)
 
 
 

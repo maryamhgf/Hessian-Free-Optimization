@@ -106,19 +106,9 @@ net = get_network(args.network,
                   dropRate=args.dropRate,
                   base_width=args.base_width,
                   cardinality=args.cardinality)
-'''
-net = vgg.vgg16(depth=args.depth,
-                  num_classes=num_classes,
-                  growthRate=args.growthRate,
-                  compressionRate=args.compressionRate,
-                  widen_factor=args.widen_factor,
-                  dropRate=args.dropRate,
-                  base_width=args.base_width,
-                  cardinality=args.cardinality).get_sequential_version()
-'''
 print(net)
 optim_name = args.optimizer.lower()
- 
+
 net = net.to(args.device)
 net = extend(net)
 
@@ -139,8 +129,6 @@ elif args.dataset == 'cifar100':
     summary(net, ( 3, 32, 32))
 elif args.dataset == 'fashion-mnist':
     summary(net, ( 1, 28, 28))
-
-
 # init dataloader
 trainloader, testloader = get_dataloader(dataset=args.dataset,
                                          train_batch_size=args.batch_size,
@@ -175,14 +163,6 @@ else:
 # init criterion
 criterion = nn.CrossEntropyLoss()
 criterion_none = nn.CrossEntropyLoss(reduction='none')
-
-
-# parameters for damping update
-# damping = args.damping
-
-
-
-
 
 damping = args.damping
 start_epoch = 0
@@ -241,7 +221,6 @@ def train(epoch):
     writer.add_scalar('train/lr', lr_scheduler.get_last_lr()[0], epoch)
 
     prog_bar = tqdm(enumerate(trainloader), total=len(trainloader), desc=desc, leave=True)
-    print("HERE1")
     criterion = torch.nn.CrossEntropyLoss().to(args.device)
     criterion = extend(criterion)
     for batch_idx, (inputs, targets) in prog_bar:
@@ -251,40 +230,9 @@ def train(epoch):
             inputs, targets = inputs.to(args.device), targets.to(args.device)
             outputs = net(inputs)
             loss = criterion(outputs, targets)
-            print("FLAG1")
             with backpack(extensions.GGNMP()):
                 loss.backward()    
             optimizer.step()    
-            '''  
-            ####################################################Cont.
-            ### new optimizer test
-            ##### do kl clip
-            lr = lr_scheduler.get_last_lr()[0]
-            vg_sum = 0
-            vg_sum += (grad_new * grad_org ).sum()
-            vg_sum = vg_sum * (lr ** 2)
-            nu = min(1.0, math.sqrt(args.kl_clip / vg_sum))
-            for name, param in net.named_parameters():
-                param.grad.mul_(nu)
-
-            # optimizer.step()
-            # manual optimizing:
-            with torch.no_grad():
-                for name, param in net.named_parameters():
-                    d_p = param.grad.data
-
-                    # apply momentum
-                    if args.momentum != 0:
-                        buf[name].mul_(args.momentum).add_(d_p)
-                        d_p.copy_(buf[name])
-
-                    # apply weight decay
-                    if args.weight_decay != 0:
-                        d_p.add_(args.weight_decay, param.data)
-
-                    lr = lr_scheduler.get_last_lr()[0]
-                    param.data.add_(-lr, d_p)
-            '''
             
         if optimizer in ['hf']:
             train_loss += loss.detach().item()
@@ -435,7 +383,6 @@ def main():
         a = np.cumsum(a)
         TRAIN_INFO['total_time'] = a
 
-    # print(TRAIN_INFO)
     # save the train info to file:
     fname = "lr_" + str(args.learning_rate) + "_b_" + str(args.batch_size)
     fname = fname + str(np.random.rand()) 
@@ -482,8 +429,6 @@ def get_accuracy(data):
         for batch_idx, (inputs, targets) in enumerate(data):
             inputs, targets = inputs.to(args.device), targets.to(args.device)
             outputs = net(inputs)
-            #print("OUTPUT111:  ", type(outputs), outputs.size())
-            #print("TARGETS111:  ", type(targets), targets.size())
             loss = criterion(outputs, targets)
             total_loss += loss.item()
             _, predicted = outputs.max(1)

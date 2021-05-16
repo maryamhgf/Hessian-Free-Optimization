@@ -22,5 +22,5 @@ def get_network(network, **kwargs):
     if network in ['vgg16', 'vgg19_bn', 'vgg13']:
         return networks[network](**kwargs).get_sequential_version()
     elif network in ['mobilenetv2']:
-        return networks[network](**kwargs)
+        return networks[network](**kwargs).get_sequential_version()
 
