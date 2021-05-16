@@ -81,8 +81,8 @@ parser.add_argument('--epsilon', default=1e-8, type=float)
 
 # for hf optimizer
 parser.add_argument('--maxIter', default=100, type=int)
-parser.add_argument('--tol', default=1e-1, type=int)
-parser.add_argument('--atol', default=1e-8, type=int)
+parser.add_argument('--tol', default=1e-1, type=float)
+parser.add_argument('--atol', default=1e-8, type=float)
 
 parser.add_argument('--debug_mem', default='false', type=str)
 parser.add_argument('--prefix', default=None, type=str)
