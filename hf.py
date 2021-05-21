@@ -31,6 +31,7 @@ class HessianFreeOptimizer(optim.Optimizer):
         for group in self.param_groups:
             weight_decay = group['weight_decay']
             for p in group["params"]:
+                print(p)
                 damped_curvature = self.damped_matvec(
                     p, group["damping"], group["savefield"]
                 )

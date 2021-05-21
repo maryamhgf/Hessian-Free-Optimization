@@ -6,8 +6,8 @@ from vgg import (vgg16_bn,
                 vgg16, 
                 vgg13)
 
-from mobilenetv2 import mobilenetv2
-
+#from mobilenetv2 import mobilenetv2
+from mobilenetv2Impl2 import mobilenetv2
 
 
 def get_network(network, **kwargs):

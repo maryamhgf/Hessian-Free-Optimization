@@ -73,8 +73,8 @@ class MobileNetV2(nn.Module):
         else:
             return nn.Sequential(*layers)
 
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
+    def forward(self):
+        out = F.relu(self.bn1(self.conv1))
         out = self.layers(out)
         out = F.relu(self.bn2(self.conv2(out)))
         # NOTE: change pooling kernel_size 7 -> 4 for CIFAR10
@@ -84,14 +84,8 @@ class MobileNetV2(nn.Module):
         return out
 
     def get_sequential_version(self):
-        layers = []
-        layers += [self.conv1, self.bn1]
-        layers += self._make_layers(in_planes=32, flag=True)
-        layers += [self.conv2, self.bn2, nn.Flatten(), self.linear]
+        layers = [self.conv1, self.bn1, F.relu, self.layers, self.conv2, self.bn2, F.relu, F.avg_pool2d, nn.Flatten, self.linear]
         return nn.Sequential(*layers)
-
-
-
 
 
 # test()

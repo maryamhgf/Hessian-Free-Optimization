@@ -98,7 +98,7 @@ nc = {
 num_classes = nc[args.dataset]
 
 net = get_network(args.network,
-                  depth=args.depth,
+                  #depth=args.depth,
                   num_classes=num_classes,
                   growthRate=args.growthRate,
                   compressionRate=args.compressionRate,
@@ -119,7 +119,6 @@ elif hasattr(net, 'children'):
     module_names = 'children'
 else:
     print('unknown net modules...')
-
 
 if args.dataset == 'mnist':
     summary(net, ( 1, 28, 28))
