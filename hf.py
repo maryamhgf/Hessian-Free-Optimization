@@ -37,7 +37,6 @@ class HessianFreeOptimizer(optim.Optimizer):
                   )
                 except:
                   if p.grad is None:
-                    print("p.grad in None.")
                     continue
                   d_p = p.grad.data
                   if weight_decay != 0:
