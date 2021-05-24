@@ -229,8 +229,8 @@ def train(epoch):
             inputs, targets = inputs.to(args.device), targets.to(args.device)
             outputs = net(inputs)
             loss = criterion(outputs, targets)
-            with backpack(extensions.GGNMP()):
-                loss.backward()    
+            #with backpack(extensions.GGNMP()):
+            loss.backward()    
             optimizer.step()    
             
         if optimizer in ['hf']:

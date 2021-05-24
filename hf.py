@@ -31,10 +31,19 @@ class HessianFreeOptimizer(optim.Optimizer):
         for group in self.param_groups:
             weight_decay = group['weight_decay']
             for p in group["params"]:
-                print(p)
-                damped_curvature = self.damped_matvec(
-                    p, group["damping"], group["savefield"]
-                )
+                try:
+                  damped_curvature = self.damped_matvec(
+                      p, group["damping"], group["savefield"]
+                  )
+                except:
+                  if p.grad is None:
+                    print("p.grad in None.")
+                    continue
+                  d_p = p.grad.data
+                  if weight_decay != 0:
+                    d_p.add_(weight_decay, p.data)
+                  p.data.add_(-group['lr'], d_p)
+                  continue
                 direction, info = self.cg(
                     damped_curvature,
                     -p.grad.data,
